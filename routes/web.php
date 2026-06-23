@@ -28,6 +28,25 @@ Route::get('/db-test', function () {
     }
 });
 
+Route::get('/db-check', function () {
+    return [
+        'default_connection' => config('database.default'),
+        'driver' => \Illuminate\Support\Facades\DB::connection()->getDriverName(),
+        'database' => config('database.connections.mysql.database'),
+        'host' => config('database.connections.mysql.host'),
+    ];
+});
+
+Route::get('/health-check', function () {
+    return [
+        'app' => config('app.name'),
+        'env' => config('app.env'),
+        'db' => \Illuminate\Support\Facades\DB::connection()->getPdo() ? 'connected' : 'failed',
+        'session_driver' => config('session.driver'),
+        'cache_driver' => config('cache.default'),
+    ];
+});
+
 Route::get('/dashboard', [DashboardController::class, 'index'])
     ->middleware(['auth'])
     ->name('dashboard');

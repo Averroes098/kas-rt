@@ -25,7 +25,7 @@ if (isset($_GET['check_key'])) {
 // Set the public path for Vercel's read-only filesystem
 $_SERVER['DOCUMENT_ROOT'] = __DIR__ . '/../public';
 
-// Vercel serverless environment overrides to use read-write /tmp path
+// Vercel serverless environment overrides to use read-write /tmp path and safe drivers
 $variables = [
     'APP_CONFIG_CACHE' => '/tmp/config.php',
     'APP_EVENTS_CACHE' => '/tmp/events.php',
@@ -34,26 +34,15 @@ $variables = [
     'APP_SERVICES_CACHE' => '/tmp/services.php',
     'VIEW_COMPILED_PATH' => '/tmp',
     'LOG_CHANNEL' => 'stderr',
+    'SESSION_DRIVER' => 'cookie',
+    'CACHE_STORE' => 'array',
+    'QUEUE_CONNECTION' => 'sync',
 ];
 
 foreach ($variables as $key => $value) {
     putenv("{$key}={$value}");
     $_ENV[$key] = $value;
     $_SERVER[$key] = $value;
-}
-
-// Default driver settings to prevent read-only filesystem errors
-$defaults = [
-    'CACHE_STORE' => 'array',
-    'SESSION_DRIVER' => 'cookie',
-];
-
-foreach ($defaults as $key => $value) {
-    if (!getenv($key)) {
-        putenv("{$key}={$value}");
-        $_ENV[$key] = $value;
-        $_SERVER[$key] = $value;
-    }
 }
 
 // Laravel's front controller execution with error capture
