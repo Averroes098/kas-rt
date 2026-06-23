@@ -63,6 +63,17 @@ Route::get('/env-check', function () {
     ]);
 });
 
+Route::get('/env-full-check', function () {
+    return response()->json([
+        'DB_CONNECTION' => getenv('DB_CONNECTION'),
+        'DB_HOST' => getenv('DB_HOST'),
+        'DB_PORT' => getenv('DB_PORT'),
+        'DB_DATABASE' => getenv('DB_DATABASE'),
+        'DB_USERNAME' => getenv('DB_USERNAME'),
+        'DB_PASSWORD_SET' => getenv('DB_PASSWORD') ? true : false,
+    ]);
+});
+
 Route::get('/health-check', function () {
     return [
         'app' => config('app.name'),

@@ -46,6 +46,24 @@ foreach ($map as $dbKey => $railwayKeys) {
     }
 }
 
+// Fallback values for Vercel + Railway MySQL connection
+$fallbacks = [
+    'DB_CONNECTION' => 'mysql',
+    'DB_HOST' => 'reseau.proxy.rlwy.net',
+    'DB_PORT' => '28454',
+    'DB_DATABASE' => 'railway',
+    'DB_USERNAME' => 'root',
+];
+
+foreach ($fallbacks as $key => $value) {
+    $currentVal = getenv($key) ?: ($_ENV[$key] ?? ($_SERVER[$key] ?? ''));
+    if (empty($currentVal) || in_array($currentVal, ['127.0.0.1', 'localhost', '3306', 'laravel', 'root'])) {
+        putenv("{$key}={$value}");
+        $_ENV[$key] = $value;
+        $_SERVER[$key] = $value;
+    }
+}
+
 // Set the public path for Vercel's read-only filesystem
 $_SERVER['DOCUMENT_ROOT'] = __DIR__ . '/../public';
 
