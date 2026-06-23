@@ -29,9 +29,18 @@ Route::get('/db-test', function () {
 });
 
 Route::get('/db-check', function () {
+    try {
+        $driver = \Illuminate\Support\Facades\DB::connection()->getDriverName();
+        $status = 'Connected successfully!';
+    } catch (\Exception $e) {
+        $driver = 'Unknown (Connection failed)';
+        $status = 'Connection failed: ' . $e->getMessage();
+    }
+
     return [
         'default_connection' => config('database.default'),
-        'driver' => \Illuminate\Support\Facades\DB::connection()->getDriverName(),
+        'driver' => $driver,
+        'status' => $status,
         'database' => config('database.connections.mysql.database'),
         'host' => config('database.connections.mysql.host'),
     ];
