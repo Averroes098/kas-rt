@@ -22,28 +22,45 @@ Route::get('/run-migrations', function () {
 Route::get('/db-test', function () {
     try {
         \Illuminate\Support\Facades\DB::connection()->getPdo();
-        return 'Database connection is successful! Database name: ' . \Illuminate\Support\Facades\DB::connection()->getDatabaseName();
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Database connection is successful!',
+            'database' => \Illuminate\Support\Facades\DB::connection()->getDatabaseName(),
+        ]);
     } catch (\Exception $e) {
-        return 'Database connection failed: ' . $e->getMessage();
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Database connection failed!',
+            'error_detail' => $e->getMessage(),
+            'host' => config('database.connections.mysql.host'),
+            'port' => config('database.connections.mysql.port'),
+            'database_config' => config('database.connections.mysql.database'),
+        ], 500);
     }
 });
 
-Route::get('/db-check', function () {
-    try {
-        $driver = \Illuminate\Support\Facades\DB::connection()->getDriverName();
-        $status = 'Connected successfully!';
-    } catch (\Exception $e) {
-        $driver = 'Unknown (Connection failed)';
-        $status = 'Connection failed: ' . $e->getMessage();
-    }
+Route::get('/env-check', function () {
+    return response()->json([
+        'DB_CONNECTION' => env('DB_CONNECTION'),
+        'DB_HOST' => env('DB_HOST'),
+        'DB_PORT' => env('DB_PORT'),
+        'DB_DATABASE' => env('DB_DATABASE'),
+        'DB_USERNAME' => env('DB_USERNAME'),
 
-    return [
-        'default_connection' => config('database.default'),
-        'driver' => $driver,
-        'status' => $status,
-        'database' => config('database.connections.mysql.database'),
-        'host' => config('database.connections.mysql.host'),
-    ];
+        'config_connection' => config('database.default'),
+        'config_host' => config('database.connections.mysql.host'),
+        'config_port' => config('database.connections.mysql.port'),
+        'config_database' => config('database.connections.mysql.database'),
+        
+        'MYSQLHOST' => env('MYSQLHOST') ? 'EXISTS' : 'NOT FOUND',
+        'MYSQLPORT' => env('MYSQLPORT') ? 'EXISTS' : 'NOT FOUND',
+        'MYSQLDATABASE' => env('MYSQLDATABASE') ? 'EXISTS' : 'NOT FOUND',
+        'MYSQLUSER' => env('MYSQLUSER') ? 'EXISTS' : 'NOT FOUND',
+        'MYSQL_HOST' => env('MYSQL_HOST') ? 'EXISTS' : 'NOT FOUND',
+        'MYSQL_PORT' => env('MYSQL_PORT') ? 'EXISTS' : 'NOT FOUND',
+        'MYSQL_DATABASE' => env('MYSQL_DATABASE') ? 'EXISTS' : 'NOT FOUND',
+        'MYSQL_USER' => env('MYSQL_USER') ? 'EXISTS' : 'NOT FOUND',
+    ]);
 });
 
 Route::get('/health-check', function () {

@@ -22,6 +22,30 @@ if (isset($_GET['check_key'])) {
     exit;
 }
 
+// Automatically map Railway MySQL environment variables to Laravel DB variables if defaults are detected
+$map = [
+    'DB_HOST' => ['MYSQLHOST', 'MYSQL_HOST'],
+    'DB_PORT' => ['MYSQLPORT', 'MYSQL_PORT'],
+    'DB_DATABASE' => ['MYSQLDATABASE', 'MYSQL_DATABASE'],
+    'DB_USERNAME' => ['MYSQLUSER', 'MYSQL_USER'],
+    'DB_PASSWORD' => ['MYSQLPASSWORD', 'MYSQL_PASSWORD'],
+];
+
+foreach ($map as $dbKey => $railwayKeys) {
+    $currentVal = getenv($dbKey) ?: ($_ENV[$dbKey] ?? ($_SERVER[$dbKey] ?? ''));
+    if (empty($currentVal) || in_array($currentVal, ['127.0.0.1', 'localhost', '3306', 'laravel', 'root'])) {
+        foreach ($railwayKeys as $rKey) {
+            $val = getenv($rKey) ?: ($_ENV[$rKey] ?? ($_SERVER[$rKey] ?? null));
+            if ($val !== null && $val !== '') {
+                putenv("{$dbKey}={$val}");
+                $_ENV[$dbKey] = $val;
+                $_SERVER[$dbKey] = $val;
+                break;
+            }
+        }
+    }
+}
+
 // Set the public path for Vercel's read-only filesystem
 $_SERVER['DOCUMENT_ROOT'] = __DIR__ . '/../public';
 
