@@ -6,7 +6,7 @@ builder = "DOCKERFILE"
 dockerfilePath = "Dockerfile"
 
 [deploy]
-startCommand = "/usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf"
+startCommand = "/bin/sh /var/www/html/docker/start.sh"
 healthcheckPath = "/up"
 healthcheckTimeout = 300
 restartPolicyType = "ON_FAILURE"
