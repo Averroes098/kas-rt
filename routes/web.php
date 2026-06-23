@@ -84,6 +84,47 @@ Route::get('/health-check', function () {
     ];
 });
 
+Route::get('/check-users', function () {
+    return [
+        'count' => \App\Models\User::count(),
+        'users' => \App\Models\User::select('id','name','email','created_at')->get(),
+    ];
+});
+
+Route::get('/create-admin', function () {
+    $user = \App\Models\User::updateOrCreate(
+        [
+            'email' => 'admin1@gmail.com'
+        ],
+        [
+            'name' => 'Administrator',
+            'password' => \Illuminate\Support\Facades\Hash::make('admin12345')
+        ]
+    );
+
+    return [
+        'status' => 'success',
+        'id' => $user->id,
+        'email' => $user->email
+    ];
+});
+
+Route::get('/reset-admin', function () {
+    $user = \App\Models\User::where('email', 'admin1@gmail.com')->first();
+
+    if (!$user) {
+        return ['status' => 'user not found'];
+    }
+
+    $user->password = \Illuminate\Support\Facades\Hash::make('admin12345');
+    $user->save();
+
+    return [
+        'status' => 'password reset',
+        'email' => $user->email
+    ];
+});
+
 Route::get('/dashboard', [DashboardController::class, 'index'])
     ->middleware(['auth'])
     ->name('dashboard');
