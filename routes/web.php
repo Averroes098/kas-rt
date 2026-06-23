@@ -87,8 +87,32 @@ Route::get('/health-check', function () {
 Route::get('/check-users', function () {
     return [
         'count' => \App\Models\User::count(),
-        'users' => \App\Models\User::select('id','name','email','created_at')->get(),
+        'users' => \App\Models\User::select('id','name','email')->get(),
     ];
+});
+
+Route::get('/check-rts', function () {
+    return [
+        'count' => \App\Models\Rt::count(),
+        'data'  => \App\Models\Rt::all(),
+    ];
+});
+
+Route::get('/run-seeder', function () {
+    try {
+        \Illuminate\Support\Facades\Artisan::call('db:seed', ['--force' => true]);
+        return [
+            'status' => 'success',
+            'output' => \Illuminate\Support\Facades\Artisan::output(),
+        ];
+    } catch (\Throwable $e) {
+        return [
+            'status'  => 'error',
+            'message' => $e->getMessage(),
+            'file'    => $e->getFile(),
+            'line'    => $e->getLine(),
+        ];
+    }
 });
 
 Route::get('/create-admin', function () {

@@ -11,23 +11,27 @@ class UserSeeder extends Seeder
     public function run(): void
     {
         for ($i = 1; $i <= 6; $i++) {
-            // Seed Admin
-            User::create([
-                'name' => 'Admin RT 0' . $i,
-                'email' => 'admin' . $i . '@gmail.com',
-                'password' => Hash::make('password'),
-                'role' => 'admin',
-                'rt_id' => $i,
-            ]);
+            // Seed Admin per RT
+            User::updateOrCreate(
+                ['email' => 'admin' . $i . '@gmail.com'],
+                [
+                    'name'     => 'Admin RT 0' . $i,
+                    'password' => Hash::make('admin12345'),
+                    'role'     => 'admin',
+                    'rt_id'    => $i,
+                ]
+            );
 
-            // Seed Warga
-            User::create([
-                'name' => 'Warga RT 0' . $i,
-                'email' => 'warga' . $i . '@gmail.com',
-                'password' => Hash::make('password'),
-                'role' => 'warga',
-                'rt_id' => $i,
-            ]);
+            // Seed Warga per RT
+            User::updateOrCreate(
+                ['email' => 'warga' . $i . '@gmail.com'],
+                [
+                    'name'     => 'Warga RT 0' . $i,
+                    'password' => Hash::make('admin12345'),
+                    'role'     => 'warga',
+                    'rt_id'    => $i,
+                ]
+            );
         }
     }
 }

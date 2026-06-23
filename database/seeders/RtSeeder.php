@@ -10,9 +10,9 @@ class RtSeeder extends Seeder
     public function run(): void
     {
         for ($i = 1; $i <= 6; $i++) {
-            Rt::create([
-                'nama_rt' => 'RT 0'.$i
-            ]);
+            Rt::updateOrCreate(
+                ['nama_rt' => 'RT 0' . $i]
+            );
         }
     }
 }
